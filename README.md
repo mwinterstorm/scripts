@@ -3,10 +3,21 @@ Helpful scripts and tools for managing my servers
 
 Probably not best practice as I am nothing more than an enthusiastic amatuer...
 
-# Run
-Run with 
+# Scripts
+## easyClean
+Runs some basic cleaning tasks to hopefully save a little disk space
+Asks before prunning docker / snaps
+
+### Run with 
 ```
-sudo bash [scriptName].sh
+sudo bash scripts/easyClean.sh
+```
+## easyUpdate
+Updates packages
+
+### Run with 
+```
+sudo bash scripts/easyUpdate.sh
 ```
 
 # add to server

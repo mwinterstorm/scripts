@@ -10,7 +10,11 @@ sudo bash [scriptName].sh
 ```
 
 # add to server
-Can clone in with
+1. Add github if necessary:
+```
+sudo apt install gh
+```
+2. Then can clone in with:
 ```
 gh repo clone mwinterstorm/scripts
 ```

@@ -21,11 +21,12 @@ sudo bash scripts/easyUpdate.sh
 ```
 
 # add to server
-1. Add github if necessary:
+### Clone with github
+```
+gh repo clone mwinterstorm/scripts
+```
+### or add github if necessary:
 ```
 sudo apt install gh
-```
-2. Then can clone in with:
-```
 gh repo clone mwinterstorm/scripts
 ```

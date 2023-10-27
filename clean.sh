@@ -64,6 +64,8 @@ then
     echo
     fi
 
+    echo Remove old revisions of snaps?
+
     read -p '[y/n]: ' varsnap
 
     if [[ $varsnap = 'y' ]]

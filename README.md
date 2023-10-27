@@ -22,7 +22,9 @@ sudo bash scripts/update.sh
 
 # update
 ```
+cd scripts
 git pull
+cd ..
 ```
 
 # add to server

@@ -20,6 +20,11 @@ Updates packages
 sudo bash scripts/update.sh
 ```
 
+# update
+```
+git pull
+```
+
 # add to server
 ### Clone with github
 ```

@@ -64,11 +64,18 @@ then
     echo
     fi
 
+    read -p '[y/n]: ' varsnap
+
+    if [[ $varsnap = 'y' ]]
+    then
+
     set -eu
     snap list --all | awk '/disabled/{print $1, $3}' |
         while read snapname revision; do
             snap remove "$snapname" --revision="$revision"
         done
+
+    fi
 
 echo
 echo Cleaning complete

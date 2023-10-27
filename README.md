@@ -10,14 +10,14 @@ Asks before prunning docker / snaps
 
 ### Run with 
 ```
-sudo bash scripts/easyClean.sh
+sudo bash scripts/clean.sh
 ```
 ## easyUpdate
 Updates packages
 
 ### Run with 
 ```
-sudo bash scripts/easyUpdate.sh
+sudo bash scripts/update.sh
 ```
 
 # add to server

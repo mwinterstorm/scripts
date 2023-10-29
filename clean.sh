@@ -67,7 +67,7 @@ then
     echo -e $YELLOW"Removing old kernels..."$ENDCOLOR
     echo current kernel you are using:
     uname -a
-    aptitude purge $OLDKERNELS
+    apt purge $OLDKERNELS
 
     echo
 

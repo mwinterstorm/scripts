@@ -6,6 +6,13 @@
 
 GREEN="\033[1;32m"
 NOCOLOR="\033[0m"
+OLDCONF=$(dpkg -l|grep "^rc"|awk '{print $2}')
+CURKERNEL=$(uname -r|sed 's/-*[a-z]//g'|sed 's/-386//g')
+LINUXPKG="linux-(image|headers|ubuntu-modules|restricted-modules)"
+METALINUXPKG="linux-(image|headers|restricted-modules)-(generic|i386|server|common|rt|xen)"
+OLDKERNELS=$(dpkg -l|awk '{print $2}'|grep -E $LINUXPKG |grep -vE $METALINUXPKG|grep -v $CURKERNEL)
+YELLOW="\033[1;33m"; RED="\033[0;31m"; ENDCOLOR="\033[0m"
+
 
 echo Cleaning script by Mark
 echo
@@ -43,6 +50,30 @@ then
 
     echo -e "step 4: ${GREEN}rerun clean${NOCOLOR}"
     apt-get clean
+
+    echo
+
+
+    echo -e $YELLOW"Those packages were uninstalled without --purge:"$ENDCOLOR
+    echo $OLDCONF
+    for PKGNAME in $OLDCONF ; do  # a better way to handle errors
+        echo -e $YELLOW"Purge package $PKGNAME"
+        apt-cache show "$PKGNAME"|grep Description: -A3
+        apt-get -y purge "$PKGNAME"
+    done
+
+    echo
+
+    echo -e $YELLOW"Removing old kernels..."$ENDCOLOR
+    echo current kernel you are using:
+    uname -a
+    aptitude purge $OLDKERNELS
+
+    echo
+
+    echo -e $YELLOW"Emptying trashes..."$ENDCOLOR
+    rm -rf /home/*/.local/share/Trash/*/** &> /dev/null
+    rm -rf /root/.local/share/Trash/*/** &> /dev/null
 
     echo
 

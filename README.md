@@ -35,6 +35,6 @@ gh repo clone mwinterstorm/scripts
 ### or add github if necessary:
 ```
 sudo apt install gh git
-gh auth login
+BROWSER=false gh auth login
 gh repo clone mwinterstorm/scripts
 ```

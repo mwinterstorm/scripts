@@ -10,6 +10,7 @@ YELLOW="\033[1;33m"; RED="\033[0;31m"; ENDCOLOR="\033[0m"
 
 echo Matrix updates by Mark
 echo
+scho Disk report:
 df -hT -t ext4
 echo
 echo Select Action:
@@ -22,97 +23,49 @@ if [[ $action = '1' ]]
 then
     echo "${GREEN}cleaning database...${NOCOLOR}"
 
-    # # if not root, run as root
-    # if (( $EUID != 0 )); then
-    #     sudo bash $HOME/upgrade.sh
-    #     exit
-    # fi
-
     echo
 
     ansible-playbook -i inventory/hosts setup.yml --tags=run-postgres-vacuum --ask-pass
 
     echo
+    echo "${GREEN}...cleaning database complete${NOCOLOR}"
+    echo
+    df -hT -t ext4
 
-    # echo -e "step 1: ${GREEN}delete downloaded packages (.deb) already installed (and no longer needed)${NOCOLOR}"
-    # apt-get clean
+elif [[ $action = '2' ]]
+then 
 
-    # echo
+    echo "${GREEN} cleaning system... ${NOCOLOR}"
+    echo
+    echo "${YELLOW} ... running docker prune ... ${NOCOLOR}"
+    echo
 
-    # echo -e "step 2: ${GREEN}remove all stored archives in your cache for packages that can not be downloaded anymore (thus packages that are no longer in the repository or that have a newer version in the repository)${NOCOLOR}"
-    # apt-get autoclean
+    ansible-playbook -i inventory/hosts setup.yml --tags=run-docker-prune --ask-pass
 
-    # echo
+    echo 
 
-    # echo -e "step 3: ${GREEN}remove unnecessary packages (After uninstalling an app there could be packages you don't need anymore)${NOCOLOR}"
-    # apt-get autoremove
+    echo "${YELLOW} ... docker prune run, running cleaning script ... ${NOCOLOR}"
 
-    # echo
+    echo 
 
-    # echo -e "step 4: ${GREEN}rerun clean${NOCOLOR}"
-    # apt-get clean
+    bash scripts/clean.sh
 
-    # echo
+    echo
 
+    echo "${GREEN} ...cleaning system complete... ${NOCOLOR}"
 
-    # echo -e $YELLOW"Those packages were uninstalled without --purge:"$ENDCOLOR
-    # echo $OLDCONF
-    # for PKGNAME in $OLDCONF ; do  # a better way to handle errors
-    #     echo -e $YELLOW"Purge package $PKGNAME"
-    #     apt-cache show "$PKGNAME"|grep Description: -A3
-    #     apt-get -y purge "$PKGNAME"
-    # done
+elif [[ $action = '3' ]]
+then 
 
-    # echo
+    echo "${GREEN} upgrading system... ${NOCOLOR}"
+    echo
+    echo "${YELLOW} ... running ansible upgrade ... ${NOCOLOR}"
+    echo
 
-    # echo -e $YELLOW"Removing old kernels..."$ENDCOLOR
-    # echo current kernel you are using:
-    # uname -a
-    # apt purge $OLDKERNELS
+    ansible-playbook -i inventory/hosts setup.yml --tags=run-docker-prune --ask-pass
 
-    # echo
+    echo 
 
-    # echo -e $YELLOW"Emptying trashes..."$ENDCOLOR
-    # rm -rf /home/*/.local/share/Trash/*/** &> /dev/null
-    # rm -rf /root/.local/share/Trash/*/** &> /dev/null
-
-    # echo
-
-    # echo -e "step 5: ${GREEN}Remove the oldest archived journal files until the disk space they use falls below the specified size${NOCOLOR}"
-    # journalctl --vacuum-size 10M
-
-    # echo
-
-    # echo Does this VM have docker? and do you want to purge docker?
-
-    # read -p '[y/n]: ' varok
-
-    # if [[ $varok = 'y' ]]
-    # then
-
-    # echo -e "step 6: ${GREEN}purging docker${NOCOLOR}"
-    # docker container prune -f && docker image prune -f
-
-    # echo
-    # fi
-
-    # echo Remove old revisions of snaps?
-
-    # read -p '[y/n]: ' varsnap
-
-    # if [[ $varsnap = 'y' ]]
-    # then
-
-    # set -eu
-    # snap list --all | awk '/disabled/{print $1, $3}' |
-    #     while read snapname revision; do
-    #         snap remove "$snapname" --revision="$revision"
-    #     done
-
-
-echo
-echo Cleaning complete
-echo
-df -hT -t ext4
+    echo "${GREEN} ...ansible upgrade complete... ${NOCOLOR}"
 
 fi

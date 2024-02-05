@@ -26,7 +26,7 @@ read -p 'Select Number: ' action
 
 if [[ $action = '1' ]]
 then
-    echo "${GREEN}cleaning database...${NOCOLOR}"
+    echo -e "${GREEN}cleaning database...${NOCOLOR}"
 
     echo
 
@@ -34,7 +34,7 @@ then
     ansible-playbook -i inventory/hosts setup.yml --tags=run-postgres-vacuum --ask-pass
 
     echo
-    echo "${GREEN}...cleaning database complete${NOCOLOR}"
+    echo -e "${GREEN}...cleaning database complete${NOCOLOR}"
     echo
     
     cd ~
@@ -44,9 +44,9 @@ then
 elif [[ $action = '2' ]]
 then 
 
-    echo "${GREEN} cleaning system... ${NOCOLOR}"
+    echo -e "${GREEN} cleaning system... ${NOCOLOR}"
     echo
-    echo "${YELLOW} ... running docker prune ... ${NOCOLOR}"
+    echo -e "${YELLOW} ... running docker prune ... ${NOCOLOR}"
     echo
 
     cd ~/matrix-docker-ansible-deploy/
@@ -54,7 +54,7 @@ then
 
     echo 
 
-    echo "${YELLOW} ... docker prune run, running cleaning script ... ${NOCOLOR}"
+    echo -e "${YELLOW} ... docker prune run, running cleaning script ... ${NOCOLOR}"
 
     echo 
 
@@ -64,15 +64,15 @@ then
     echo
 
     cd ~
-    echo "${GREEN} ...cleaning system complete... ${NOCOLOR}"
+    echo -e "${GREEN} ...cleaning system complete... ${NOCOLOR}"
     df -hT -t ext4
 
 elif [[ $action = '3' ]]
 then 
 
-    echo "${GREEN} upgrading system... ${NOCOLOR}"
+    echo -e "${GREEN} upgrading system... ${NOCOLOR}"
     echo
-    echo "${YELLOW} ... running ansible upgrade ... ${NOCOLOR}"
+    echo -e "${YELLOW} ... running ansible upgrade ... ${NOCOLOR}"
     echo
 
     cd ~/matrix-docker-ansible-deploy/
@@ -80,7 +80,7 @@ then
 
     echo 
 
-    echo "${GREEN} ...ansible upgrade complete... ${NOCOLOR}"
+    echo -e "${GREEN} ...ansible upgrade complete... ${NOCOLOR}"
     cd ~
 
 elif [[ $action = '0' ]]
@@ -90,5 +90,5 @@ then
     sudo systemctl status matrix-synapse
 
     echo 
-    
+
 fi

@@ -72,10 +72,32 @@ then
 
     echo -e "${GREEN} upgrading system... ${NOCOLOR}"
     echo
-    echo -e "${YELLOW} ... running ansible upgrade ... ${NOCOLOR}"
     echo
 
     cd ~/matrix-docker-ansible-deploy/
+    
+    echo -e "${YELLOW} ...pulling latest version of playbook ... ${NOCOLOR}"
+
+    echo 
+
+    git pull
+
+    echo
+
+    sleep 1
+
+    echo -e "${YELLOW} ...pulling roles... ${NOCOLOR}"
+
+    echo 
+
+    just roles
+
+    echo
+
+    sleep 1
+
+    echo -e "${YELLOW} ... running ansible upgrade ... ${NOCOLOR}"
+    
     ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start --ask-pass
 
     echo 

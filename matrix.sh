@@ -72,7 +72,6 @@ then
 
     echo -e "${GREEN} upgrading system... ${NOCOLOR}"
     echo
-    echo
 
     cd ~/matrix-docker-ansible-deploy/
     

@@ -5,7 +5,9 @@
 
 GREEN="\033[1;32m"
 NOCOLOR="\033[0m"
-YELLOW="\033[1;33m"; RED="\033[0;31m"; ENDCOLOR="\033[0m"
+YELLOW="\033[1;33m" 
+RED="\033[0;31m" 
+ENDCOLOR="\033[0m"
 
 
 echo Matrix updates by Mark
@@ -14,9 +16,12 @@ scho Disk report:
 df -hT -t ext4
 echo
 echo Select Action:
+
+echo 0. Check system status
 echo 1. Clean Database
 echo 2. Clean Other - prune docker etc and run clean.sh
 echo 3. Upgrade to latest
+
 read -p 'Select Number: ' action
 
 if [[ $action = '1' ]]
@@ -78,4 +83,12 @@ then
     echo "${GREEN} ...ansible upgrade complete... ${NOCOLOR}"
     cd ~
 
+elif [[ $action = '0' ]]
+then
+    echo 
+
+    sudo systemctl status matrix-synapse
+
+    echo 
+    
 fi

@@ -25,7 +25,8 @@ then
 
     echo
 
-    matrix-docker-ansible-deploy/ansible-playbook -i inventory/hosts setup.yml --tags=run-postgres-vacuum --ask-pass
+    cd ~/matrix-docker-ansible-deploy/
+    ansible-playbook -i inventory/hosts setup.yml --tags=run-postgres-vacuum --ask-pass
 
     echo
     echo "${GREEN}...cleaning database complete${NOCOLOR}"
@@ -40,7 +41,8 @@ then
     echo "${YELLOW} ... running docker prune ... ${NOCOLOR}"
     echo
 
-    matrix-docker-ansible-deploy/ansible-playbook -i inventory/hosts setup.yml --tags=run-docker-prune --ask-pass
+    cd ~/matrix-docker-ansible-deploy/
+    ansible-playbook -i inventory/hosts setup.yml --tags=run-docker-prune --ask-pass
 
     echo 
 
@@ -62,7 +64,8 @@ then
     echo "${YELLOW} ... running ansible upgrade ... ${NOCOLOR}"
     echo
 
-    matrix-docker-ansible-deploy/ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start --ask-pass
+    cd ~/matrix-docker-ansible-deploy/
+    ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start --ask-pass
 
     echo 
 

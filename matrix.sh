@@ -12,7 +12,7 @@ ENDCOLOR="\033[0m"
 
 echo Matrix updates by Mark
 echo
-scho Disk report:
+echo Disk report:
 df -hT -t ext4
 echo
 echo Select Action:

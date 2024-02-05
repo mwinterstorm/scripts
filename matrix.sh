@@ -76,33 +76,48 @@ then
 
     cd ~/matrix-docker-ansible-deploy/
     
-    echo -e "${YELLOW} ...pulling latest version of playbook ... ${NOCOLOR}"
 
     echo 
 
-    git pull
+    read -p 'Git Pull [y/N]: ' git
+
+    if [[ git = 'y' ]] 
+    then
+
+        echo -e "${YELLOW} ...pulling latest version of playbook ... ${NOCOLOR}"
+        git pull
+
+    fi
+
+    echo
+
+    sleep 1
+    read -p 'Roles Pull [y/N]: ' roles
+
+    if [[ roles = 'y' ]] 
+    then
+
+        echo -e "${YELLOW} ...pulling roles... ${NOCOLOR}"
+        just roles
+
+    fi
 
     echo
 
     sleep 1
 
-    echo -e "${YELLOW} ...pulling roles... ${NOCOLOR}"
+    read -p 'Upgrade Matrix [y/N]: ' upgrade
 
-    echo 
+    if [[ upgrade = 'y' ]] 
+    then
 
-    just roles
+        echo -e "${YELLOW} ... running ansible upgrade ... ${NOCOLOR}"
+        ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start --ask-pass
+        echo 
+        echo -e "${GREEN} ...ansible upgrade complete... ${NOCOLOR}"
 
-    echo
+    fi
 
-    sleep 1
-
-    echo -e "${YELLOW} ... running ansible upgrade ... ${NOCOLOR}"
-    
-    ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start --ask-pass
-
-    echo 
-
-    echo -e "${GREEN} ...ansible upgrade complete... ${NOCOLOR}"
     cd ~
 
 elif [[ $action = '0' ]]

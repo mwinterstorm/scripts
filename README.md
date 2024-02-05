@@ -23,10 +23,10 @@ sudo bash scripts/update.sh
 ## matrix
 Various matrix ansible commands for https://github.com/spantaleev/matrix-docker-ansible-deploy
 Commands to:
-0. check system status
-1. clean DB
-2. clean system
-3. upgrade
+- check system status
+- clean DB
+- clean system
+- upgrade
 
 ### Run with 
 ```

@@ -81,7 +81,7 @@ then
 
     read -p 'Git Pull [y/N]: ' git
 
-    if [[ git = 'y' ]] 
+    if [[ $git = 'y' ]] 
     then
 
         echo -e "${YELLOW} ...pulling latest version of playbook ... ${NOCOLOR}"
@@ -94,7 +94,7 @@ then
     sleep 1
     read -p 'Roles Pull [y/N]: ' roles
 
-    if [[ roles = 'y' ]] 
+    if [[ $roles = 'y' ]] 
     then
 
         echo -e "${YELLOW} ...pulling roles... ${NOCOLOR}"
@@ -108,7 +108,7 @@ then
 
     read -p 'Upgrade Matrix [y/N]: ' upgrade
 
-    if [[ upgrade = 'y' ]] 
+    if [[ $upgrade = 'y' ]] 
     then
 
         echo -e "${YELLOW} ... running ansible upgrade ... ${NOCOLOR}"

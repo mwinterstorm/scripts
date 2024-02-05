@@ -20,6 +20,19 @@ Updates packages
 sudo bash scripts/update.sh
 ```
 
+## matrix
+Various matrix ansible commands for https://github.com/spantaleev/matrix-docker-ansible-deploy
+Commands to:
+0. check system status
+1. clean DB
+2. clean system
+3. upgrade
+
+### Run with 
+```
+sudo bash scripts/matrix.sh
+```
+
 # update
 ```
 cd scripts

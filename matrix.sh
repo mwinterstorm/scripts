@@ -14,13 +14,13 @@ df -hT -t ext4
 echo
 echo Select Action:
 echo 1. Clean Database
-echo 2. Clean Other - prune docker etc
+echo 2. Clean Other - prune docker etc and run clean.sh
 echo 3. Upgrade to latest
 read -p 'Select Number: ' action
 
-if [[ $action = 'y' ]]
+if [[ $action = '1' ]]
 then
-    echo cleaning...
+    echo "${GREEN}cleaning database...${NOCOLOR}"
 
     # # if not root, run as root
     # if (( $EUID != 0 )); then
@@ -28,7 +28,11 @@ then
     #     exit
     # fi
 
-    # echo
+    echo
+
+    ansible-playbook -i inventory/hosts setup.yml --tags=run-postgres-vacuum --ask-pass
+
+    echo
 
     # echo -e "step 1: ${GREEN}delete downloaded packages (.deb) already installed (and no longer needed)${NOCOLOR}"
     # apt-get clean
@@ -105,7 +109,6 @@ then
     #         snap remove "$snapname" --revision="$revision"
     #     done
 
-    fi
 
 echo
 echo Cleaning complete

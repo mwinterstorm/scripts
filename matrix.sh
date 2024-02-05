@@ -31,6 +31,9 @@ then
     echo
     echo "${GREEN}...cleaning database complete${NOCOLOR}"
     echo
+    
+    cd ~
+
     df -hT -t ext4
 
 elif [[ $action = '2' ]]
@@ -50,11 +53,14 @@ then
 
     echo 
 
-    bash scripts/clean.sh
+    cd ~/scripts
+    bash clean.sh
 
     echo
 
+    cd ~
     echo "${GREEN} ...cleaning system complete... ${NOCOLOR}"
+    df -hT -t ext4
 
 elif [[ $action = '3' ]]
 then 
@@ -70,5 +76,6 @@ then
     echo 
 
     echo "${GREEN} ...ansible upgrade complete... ${NOCOLOR}"
+    cd ~
 
 fi

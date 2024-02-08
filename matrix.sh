@@ -21,6 +21,7 @@ echo 0. Check system status
 echo 1. Clean Database
 echo 2. Clean Other - prune docker etc and run clean.sh
 echo 3. Upgrade to latest
+echo 4. Start Matrix
 
 read -p 'Select Number: ' action
 
@@ -124,6 +125,17 @@ then
     echo 
 
     sudo systemctl status matrix-synapse
+
+    echo 
+
+elif [[ $action = '4' ]]
+then
+    echo 
+
+    echo -e "${GREEN}starting...${NOCOLOR}"
+
+
+    ansible-playbook -i inventory/hosts setup.yml --tags=start --ask-pass
 
     echo 
 

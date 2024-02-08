@@ -128,14 +128,29 @@ then
 
     echo 
 
+    read -p 'Run Matrix self check? [y/N]: ' selfcheck
+
+    if [[ $selfcheck = 'y' ]] 
+    then
+
+    cd ~/matrix-docker-ansible-deploy/
+        ansible-playbook -i inventory/hosts setup.yml --tags=self-check --ask-pass
+        echo 
+    cd ~
+
+    fi
+
 elif [[ $action = '4' ]]
 then
     echo 
 
     echo -e "${GREEN}starting...${NOCOLOR}"
 
+    cd ~/matrix-docker-ansible-deploy/
 
     ansible-playbook -i inventory/hosts setup.yml --tags=start --ask-pass
+
+    cd ~
 
     echo 
 

@@ -10,7 +10,7 @@ Runs a comprehensive cleaning script to free up disk space on your system. It in
 - Purging old kernels (keeping the latest N, configurable with KERNEL_KEEP)
 - Removing orphaned packages
 - Cleaning journal logs, rotated logs, and user/disk caches
-- Removing core dumps, snap leftovers, docker containers (if installed)
+- Removing core dumps, snap leftovers, docker containers (if installed), and Syncthing versioned files (if Syncthing is installed)
 - Optional dry-run mode and detailed logging
 
 ### Run with
@@ -32,6 +32,22 @@ DISK_TYPE=xfs           Filesystem type for reporting (used in legacy mode)
 DISK_MOUNT=/            Mount point to check disk usage on (default is /)
 TRASH_PATHS="..."       Space-separated paths to empty trash from
 KERNEL_KEEP=2           Number of kernel versions to retain (excluding current)
+ST_CLEAN_DAYS=14       Days after which Syncthing versioned files will be deleted (default: 7)
+```
+
+### Example: Nuclear Cleanup
+
+The `--nuclear` option performs an aggressive cleanup of non-essential files and unused system data. It includes:
+
+- Removal of manual pages (`/usr/share/man`)
+- Aggressive journal log truncation (`journalctl --vacuum-size=1M`)
+- Locale cleanup using `localepurge`, retaining only `en` and `en_NZ.UTF-8` by default
+- Conditional installation of `localepurge` if not already installed
+- Logging of actions to the specified or default log file
+
+You can run it like this:
+```
+sudo bash scripts/clean.sh --nuclear
 ```
 
 ## easyUpdate

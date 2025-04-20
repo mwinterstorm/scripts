@@ -1,4 +1,5 @@
 #!/bin/bash
+ST_CLEAN_DAYS="${ST_CLEAN_DAYS:-7}"
 # Removes old revisions of snaps
 # CLOSE ALL SNAPS BEFORE RUNNING THIS
 
@@ -174,6 +175,12 @@ then
     $DRYRUN || rm -rf /home/*/.cache /root/.cache /home/*/.npm /root/.npm >> "$LOGFILE" 2>&1
 
     echo
+    if command -v syncthing &> /dev/null; then
+        echo -e "${YELLOW}Cleaning Syncthing versioned files older than ${ST_CLEAN_DAYS} days${NOCOLOR}" | tee -a "$LOGFILE"
+        $DRYRUN || find /root/Calibre/.stversions/ -type f -mtime +$ST_CLEAN_DAYS -exec rm -f {} + >> "$LOGFILE" 2>&1
+    else
+        echo "Syncthing not installed. Skipping Syncthing cleanup." | tee -a "$LOGFILE"
+    fi
 
     if command -v docker &> /dev/null; then
         echo Does this VM have docker? and do you want to purge docker?

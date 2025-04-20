@@ -158,7 +158,7 @@ then
 
     echo
     echo -e "${YELLOW}Top 10 largest files${NOCOLOR}" | tee -a "$LOGFILE"
-    find / -type f -size +100M -exec du -h {} + 2>/dev/null | sort -hr | head -n 10 >> "$LOGFILE"
+    find / -type f -size +100M -exec du -h {} + 2>/dev/null | sort -hr | head -n 10 | tee -a "$LOGFILE"
 
     echo
     echo -e "${YELLOW}Cleaning rotated and uncompressed logs${NOCOLOR}" | tee -a "$LOGFILE"
@@ -241,6 +241,8 @@ then
     echo -e "Start Usage: $START_VAL KB ($START_HUMAN)" | tee -a "$LOGFILE"
     echo -e "End Usage:   $END_VAL KB ($END_HUMAN)" | tee -a "$LOGFILE"
     echo -e "Freed Space: ${FREED_MB} MB (${FREED_HUMAN})" | tee -a "$LOGFILE"
+    echo -e "Total Used:  $END_VAL KB ($END_HUMAN)" | tee -a "$LOGFILE"
     echo -e "Percent Freed: ${PERCENT}%" | tee -a "$LOGFILE"
+    echo -e "Log File:     $LOGFILE" | tee -a "$LOGFILE"
 
 fi

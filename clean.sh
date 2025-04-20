@@ -40,6 +40,8 @@ for arg in "$@"; do
     esac
 done
 
+START_USAGE=$(df --output=used -kT -t "$DISK_TYPE" | tail -1)
+
 echo "==== Cleanup started at $(date) ====" > "$LOGFILE"
 echo "Dry run mode: $DRYRUN" >> "$LOGFILE"
 echo "Vacuum size: $VACUUM_SIZE" >> "$LOGFILE"
@@ -194,7 +196,20 @@ then
     echo
     echo Cleaning complete
     echo
+
+    END_USAGE=$(df --output=used -kT -t "$DISK_TYPE" | tail -1)
+    FREED_KB=$(( $(echo $START_USAGE | awk '{print $2}') - $(echo $END_USAGE | awk '{print $2}') ))
+    FREED_MB=$(( FREED_KB / 1024 ))
+    command -v numfmt >/dev/null || FREED_HUMAN="${FREED_MB}MB"
+    FREED_HUMAN=$(numfmt --to=iec $((FREED_MB * 1024 * 1024)))
+
     df -hT -t "$DISK_TYPE" | tee -a "$LOGFILE"
     $DRYRUN && echo "Dry run mode: no changes were actually made." | tee -a "$LOGFILE"
+
+    echo
+    echo -e "${GREEN}Summary Report:${NOCOLOR}" | tee -a "$LOGFILE"
+    echo -e "Start Usage: $(echo $START_USAGE | awk '{print $2}') KB" | tee -a "$LOGFILE"
+    echo -e "End Usage:   $(echo $END_USAGE | awk '{print $2}') KB" | tee -a "$LOGFILE"
+    echo -e "Freed Space: ${FREED_MB} MB (${FREED_HUMAN})" | tee -a "$LOGFILE"
 
 fi

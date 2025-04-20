@@ -1,6 +1,24 @@
 #!/bin/bash
 
 LOGFILE="/var/log/update-script.log"
+SILENT=false
+FORCE=false
+for arg in "$@"; do
+  case $arg in
+    --silent|-s) SILENT=true ;;
+    --force|-f) FORCE=true ;;
+    --help|-h)
+      echo -e "${GREEN}Usage: $0 [OPTIONS]${NOCOLOR}"
+      echo ""
+      echo "Options:"
+      echo "  --silent, -s       Suppress prompts and only log output"
+      echo "  --force, -f        Proceed without asking for confirmation"
+      echo "  --help, -h         Show this help message"
+      exit 0
+      ;;
+  esac
+done
+
 echo "==== Update started at $(date) ====" > "$LOGFILE"
 
 GREEN="\033[1;32m"
@@ -13,6 +31,8 @@ if (( $EUID != 0 )); then
 fi
 
 echo
+
+UPDATE_START=$(date +%s)
 
 echo -e "step 1: ${GREEN}pre-configuring packages${NOCOLOR}" | tee -a "$LOGFILE"
 dpkg --configure -a >> "$LOGFILE" 2>&1
@@ -33,8 +53,13 @@ echo -e "step 4: ${GREEN}check update packages${NOCOLOR}" | tee -a "$LOGFILE"
 apt list --upgradable | tee -a "$LOGFILE"
 
 echo -e "${GREEN}Upgrade candidates listed above.${NOCOLOR}" | tee -a "$LOGFILE"
-echo "Ok to proceed with full upgrade?" | tee -a "$LOGFILE"
-read -p '[y/n]: ' varok
+if [[ "$FORCE" == true ]]; then
+  varok="y"
+  echo "Proceeding with upgrade (forced)." | tee -a "$LOGFILE"
+else
+  echo "Ok to proceed with full upgrade?" | tee -a "$LOGFILE"
+  read -p '[y/n]: ' varok
+fi
 
 if [[ $varok = 'y' ]]
 then
@@ -60,8 +85,13 @@ apt-get autoclean -y >> "$LOGFILE" 2>&1
 echo
 fi
 
+UPDATE_END=$(date +%s)
+DURATION=$((UPDATE_END - UPDATE_START))
+DURATION_HM=$(printf '%02d:%02d' $((DURATION/60)) $((DURATION%60)))
+
 echo | tee -a "$LOGFILE"
 echo -e "${GREEN}System update complete.${NOCOLOR}" | tee -a "$LOGFILE"
+echo "Duration: $DURATION seconds ($DURATION_HM)" | tee -a "$LOGFILE"
 echo "Uptime: $(uptime -p)" | tee -a "$LOGFILE"
 echo "Kernel: $(uname -r)" | tee -a "$LOGFILE"
 echo "Disk Usage:" | tee -a "$LOGFILE"

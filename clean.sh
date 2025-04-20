@@ -95,9 +95,13 @@ then
     $DRYRUN || apt-get autoremove >> "$LOGFILE" 2>&1
 
     echo
-    echo -e "${YELLOW}Removing orphaned packages${NOCOLOR}" | tee -a "$LOGFILE"
-    deborphan | tee -a "$LOGFILE"
-    $DRYRUN || deborphan | xargs -r apt-get -y purge >> "$LOGFILE" 2>&1
+    if command -v deborphan &> /dev/null; then
+        echo -e "${YELLOW}Removing orphaned packages${NOCOLOR}" | tee -a "$LOGFILE"
+        deborphan | tee -a "$LOGFILE"
+        $DRYRUN || deborphan | xargs -r apt-get -y purge >> "$LOGFILE" 2>&1
+    else
+        echo "deborphan not installed. Skipping orphaned package cleanup." | tee -a "$LOGFILE"
+    fi
 
     echo
 
@@ -218,8 +222,8 @@ then
 
     echo
     echo -e "${GREEN}Summary Report:${NOCOLOR}" | tee -a "$LOGFILE"
-    echo -e "Start Usage: $(echo $START_USAGE | awk '{print $2}') KB" | tee -a "$LOGFILE"
-    echo -e "End Usage:   $(echo $END_USAGE | awk '{print $2}') KB" | tee -a "$LOGFILE"
+    echo -e "Start Usage: $START_VAL KB" | tee -a "$LOGFILE"
+    echo -e "End Usage:   $END_VAL KB" | tee -a "$LOGFILE"
     echo -e "Freed Space: ${FREED_MB} MB (${FREED_HUMAN})" | tee -a "$LOGFILE"
 
 fi

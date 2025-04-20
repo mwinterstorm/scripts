@@ -4,9 +4,35 @@
 
 GREEN="\033[1;32m"
 NOCOLOR="\033[0m"
+YELLOW="\033[1;33m"
 DRYRUN=false
 LOGFILE="/var/log/clean-script.log"
-[[ "$1" == "--dry-run" ]] && DRYRUN=true
+
+for arg in "$@"; do
+    case $arg in
+        --dry-run|-n)
+            DRYRUN=true
+            ;;
+        --logfile=*|-l=*)
+            LOGFILE="${arg#*=}"
+            ;;
+        --clear-log|-c)
+            echo "Clearing log file: $LOGFILE"
+            > "$LOGFILE"
+            exit 0
+            ;;
+        --help|-h)
+            echo -e "${GREEN}Usage: clean.sh [OPTIONS]${NOCOLOR}"
+            echo ""
+            echo -e "${YELLOW}Options:${NOCOLOR}"
+            echo -e "  ${GREEN}--dry-run, -n       ${NOCOLOR}Perform a trial run with no changes made"
+            echo -e "  ${GREEN}--logfile=PATH, -l=PATH ${NOCOLOR}Specify a custom path for the log file"
+            echo -e "  ${GREEN}--clear-log, -c     ${NOCOLOR}Clear the log file and exit"
+            echo -e "  ${GREEN}--help, -h          ${NOCOLOR}Show this help message and exit"
+            exit 0
+            ;;
+    esac
+done
 
 echo "==== Cleanup started at $(date) ====" > "$LOGFILE"
 echo "Dry run mode: $DRYRUN" >> "$LOGFILE"
@@ -16,7 +42,7 @@ CURKERNEL=$(uname -r|sed 's/-*[a-z]//g'|sed 's/-386//g')
 LINUXPKG="linux-(image|headers|ubuntu-modules|restricted-modules)"
 METALINUXPKG="linux-(image|headers|restricted-modules)-(generic|i386|server|common|rt|xen)"
 OLDKERNELS=$(dpkg -l|awk '{print $2}'|grep -E $LINUXPKG |grep -vE $METALINUXPKG|grep -v $CURKERNEL)
-YELLOW="\033[1;33m"; RED="\033[0;31m"; ENDCOLOR="\033[0m"
+RED="\033[0;31m"; ENDCOLOR="\033[0m"
 
 echo Cleaning script by Mark
 echo

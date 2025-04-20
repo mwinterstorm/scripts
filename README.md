@@ -60,6 +60,9 @@ Performs a full, interactive system update with logging and summary.
 - Removes unused packages and cleans package cache
 - Logs actions to `/var/log/update-script.log`
 - Displays a post-update summary including uptime, kernel version, and disk usage
+- Supports flags: --silent/-s to suppress prompts, --force/-f to auto-confirm updates, and --help/-h for usage info
+- Tracks and logs the full duration of the update process
+- Always shows a post-update summary (uptime, kernel, disk usage)
 - Prompts to reboot if required
 
 ### Run with 

@@ -20,16 +20,18 @@ sudo bash scripts/clean.sh
 
 ### Options
 ```
---dry-run            Perform a trial run without making changes
---logfile=PATH       Specify a custom path for the log file
---clear-log          Clear the log file and exit
---help               Show usage info
+--dry-run, -n           Perform a trial run without making any changes
+--logfile=PATH, -l=PATH Specify a custom path for the log output
+--clear-log, -c         Clear the existing log file and exit
+--help, -h              Show usage information and exit
+--nuclear               EXTREME cleanup: removes man pages, prunes locale files, and aggressively trims journal logs
 
 Environment variables:
-VACUUM_SIZE=50M      Set journal cleanup target
-DISK_TYPE=xfs        Change target disk for reporting
-TRASH_PATHS="..."    Specify trash paths to clean
-KERNEL_KEEP=2        Number of kernel versions to retain
+VACUUM_SIZE=50M         Set the target size for journal logs
+DISK_TYPE=xfs           Filesystem type for reporting (used in legacy mode)
+DISK_MOUNT=/            Mount point to check disk usage on (default is /)
+TRASH_PATHS="..."       Space-separated paths to empty trash from
+KERNEL_KEEP=2           Number of kernel versions to retain (excluding current)
 ```
 
 ## easyUpdate

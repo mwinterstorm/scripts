@@ -11,8 +11,10 @@ DISK_TYPE="${DISK_TYPE:-ext4}"
 GREEN="\033[1;32m"
 NOCOLOR="\033[0m"
 YELLOW="\033[1;33m"
+RED="\033[0;31m"
 DRYRUN=false
 LOGFILE="/var/log/clean-script.log"
+NUCLEAR=false
 
 for arg in "$@"; do
     case $arg in
@@ -35,7 +37,11 @@ for arg in "$@"; do
             echo -e "  ${GREEN}--logfile=PATH, -l=PATH ${NOCOLOR}Specify a custom path for the log file"
             echo -e "  ${GREEN}--clear-log, -c     ${NOCOLOR}Clear the log file and exit"
             echo -e "  ${GREEN}--help, -h          ${NOCOLOR}Show this help message and exit"
+            echo -e "  ${GREEN}--nuclear          ${NOCOLOR}EXTREME cleanup: remove locales, man pages, and aggressively purge journals"
             exit 0
+            ;;
+        --nuclear)
+            NUCLEAR=true
             ;;
     esac
 done
@@ -57,7 +63,6 @@ METALINUXPKG="linux-(image|headers|restricted-modules)-(generic|i386|server|comm
 KERNELS=$(dpkg -l | awk '/^ii/ && $2 ~ /^linux-image-[0-9]/ { print $2 }' | sort -V)
 CURRENT_KERNEL=$(uname -r)
 OLDKERNELS=$(echo "$KERNELS" | grep -v "$CURRENT_KERNEL" | head -n -"$KERNEL_KEEP")
-RED="\033[0;31m"; ENDCOLOR="\033[0m"
 
 echo Cleaning script by Mark
 echo
@@ -207,6 +212,34 @@ then
     $DRYRUN || rm -rf /var/lib/snapd/snaps/*.snap >> "$LOGFILE" 2>&1
 
     echo
+
+    if [[ "$NUCLEAR" == true ]]; then
+        echo
+        echo -e "${RED}*** WARNING: NUCLEAR MODE ACTIVE ***${NOCOLOR}" | tee -a "$LOGFILE"
+
+        echo -e "${YELLOW}Removing man pages${NOCOLOR}" | tee -a "$LOGFILE"
+        $DRYRUN || rm -rf /usr/share/man/* >> "$LOGFILE" 2>&1
+
+        echo -e "${YELLOW}Aggressively vacuuming journal logs${NOCOLOR}" | tee -a "$LOGFILE"
+        $DRYRUN || journalctl --vacuum-size=1M >> "$LOGFILE" 2>&1
+
+        if command -v localepurge &> /dev/null; then
+            echo -e "${YELLOW}Running localepurge${NOCOLOR}" | tee -a "$LOGFILE"
+            $DRYRUN || localepurge >> "$LOGFILE" 2>&1
+        else
+            echo "localepurge not installed." | tee -a "$LOGFILE"
+            read -p "Install localepurge? [y/n]: " install_lp
+            if [[ "$install_lp" == "y" ]]; then
+                echo "Installing localepurge..." | tee -a "$LOGFILE"
+                $DRYRUN || apt-get install -y localepurge >> "$LOGFILE" 2>&1
+                echo "Running localepurge..." | tee -a "$LOGFILE"
+                $DRYRUN || localepurge >> "$LOGFILE" 2>&1
+            else
+                echo "Skipping locale cleanup." | tee -a "$LOGFILE"
+            fi
+        fi
+    fi
+
     echo Cleaning complete
     echo
 

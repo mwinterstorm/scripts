@@ -32,10 +32,8 @@ echo
 echo -e "step 4: ${GREEN}check update packages${NOCOLOR}" | tee -a "$LOGFILE"
 apt list --upgradable | tee -a "$LOGFILE"
 
-echo
-
-echo Ok to proceed?
-
+echo -e "${GREEN}Upgrade candidates listed above.${NOCOLOR}" | tee -a "$LOGFILE"
+echo "Ok to proceed with full upgrade?" | tee -a "$LOGFILE"
 read -p '[y/n]: ' varok
 
 if [[ $varok = 'y' ]]
@@ -60,16 +58,18 @@ echo -e "step 8: ${GREEN}clean up${NOCOLOR}" | tee -a "$LOGFILE"
 apt-get autoclean -y >> "$LOGFILE" 2>&1
 
 echo
+fi
+
+echo | tee -a "$LOGFILE"
+echo -e "${GREEN}System update complete.${NOCOLOR}" | tee -a "$LOGFILE"
+echo "Uptime: $(uptime -p)" | tee -a "$LOGFILE"
+echo "Kernel: $(uname -r)" | tee -a "$LOGFILE"
+echo "Disk Usage:" | tee -a "$LOGFILE"
+df -h / | tee -a "$LOGFILE"
+echo "Log File: $LOGFILE" | tee -a "$LOGFILE"
 
 if [ -f /var/run/reboot-required ]; then
-    echo | tee -a "$LOGFILE"
-    echo -e "${GREEN}System update complete.${NOCOLOR}" | tee -a "$LOGFILE"
-    echo "Uptime: $(uptime -p)" | tee -a "$LOGFILE"
-    echo "Kernel: $(uname -r)" | tee -a "$LOGFILE"
-    echo "Disk Usage:" | tee -a "$LOGFILE"
-    df -h / | tee -a "$LOGFILE"
-    echo "Log File: $LOGFILE" | tee -a "$LOGFILE"
+    echo
     read -p "Reboot now? [y/n]: " rebootnow
     [[ $rebootnow == "y" ]] && reboot
-fi
 fi

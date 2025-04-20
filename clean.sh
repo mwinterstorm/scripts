@@ -100,7 +100,15 @@ then
         deborphan | tee -a "$LOGFILE"
         $DRYRUN || deborphan | xargs -r apt-get -y purge >> "$LOGFILE" 2>&1
     else
-        echo "deborphan not installed. Skipping orphaned package cleanup." | tee -a "$LOGFILE"
+        echo "deborphan not installed." | tee -a "$LOGFILE"
+        read -p "Do you want to install deborphan? [y/n]: " install_deborphan
+        if [[ $install_deborphan == "y" ]]; then
+            echo "Installing deborphan..." | tee -a "$LOGFILE"
+            $DRYRUN || apt-get update >> "$LOGFILE" 2>&1
+            $DRYRUN || apt-get install -y deborphan >> "$LOGFILE" 2>&1
+        else
+            echo "Skipping orphaned package cleanup." | tee -a "$LOGFILE"
+        fi
     fi
 
     echo
@@ -210,20 +218,29 @@ then
         FREED_MB=$((FREED_KB / 1024))
         if command -v numfmt >/dev/null; then
             FREED_HUMAN=$(numfmt --to=iec $((FREED_MB * 1024 * 1024)))
+            START_HUMAN=$(numfmt --to=iec $((START_VAL * 1024)))
+            END_HUMAN=$(numfmt --to=iec $((END_VAL * 1024)))
         else
             FREED_HUMAN="${FREED_MB}MB"
+            START_HUMAN="${START_VAL}KB"
+            END_HUMAN="${END_VAL}KB"
         fi
+        PERCENT=$(awk "BEGIN { pc=100*${FREED_KB}/${START_VAL}; print int(pc) }")
     else
         FREED_MB=0
         FREED_HUMAN="N/A"
+        START_HUMAN="N/A"
+        END_HUMAN="N/A"
+        PERCENT="N/A"
     fi
     df -h "$DISK_MOUNT" | tee -a "$LOGFILE"
     $DRYRUN && echo "Dry run mode: no changes were actually made." | tee -a "$LOGFILE"
 
     echo
     echo -e "${GREEN}Summary Report:${NOCOLOR}" | tee -a "$LOGFILE"
-    echo -e "Start Usage: $START_VAL KB" | tee -a "$LOGFILE"
-    echo -e "End Usage:   $END_VAL KB" | tee -a "$LOGFILE"
+    echo -e "Start Usage: $START_VAL KB ($START_HUMAN)" | tee -a "$LOGFILE"
+    echo -e "End Usage:   $END_VAL KB ($END_HUMAN)" | tee -a "$LOGFILE"
     echo -e "Freed Space: ${FREED_MB} MB (${FREED_HUMAN})" | tee -a "$LOGFILE"
+    echo -e "Percent Freed: ${PERCENT}%" | tee -a "$LOGFILE"
 
 fi

@@ -2,6 +2,9 @@
 # Removes old revisions of snaps
 # CLOSE ALL SNAPS BEFORE RUNNING THIS
 
+VACUUM_SIZE="${VACUUM_SIZE:-10M}"
+DISK_TYPE="${DISK_TYPE:-ext4}"
+
 GREEN="\033[1;32m"
 NOCOLOR="\033[0m"
 YELLOW="\033[1;33m"
@@ -36,6 +39,8 @@ done
 
 echo "==== Cleanup started at $(date) ====" > "$LOGFILE"
 echo "Dry run mode: $DRYRUN" >> "$LOGFILE"
+echo "Vacuum size: $VACUUM_SIZE" >> "$LOGFILE"
+echo "Disk type: $DISK_TYPE" >> "$LOGFILE"
 
 OLDCONF=$(dpkg -l|grep "^rc"|awk '{print $2}')
 CURKERNEL=$(uname -r|sed 's/-*[a-z]//g'|sed 's/-386//g')
@@ -46,7 +51,7 @@ RED="\033[0;31m"; ENDCOLOR="\033[0m"
 
 echo Cleaning script by Mark
 echo
-df -hT -t ext4
+df -hT -t "$DISK_TYPE"
 echo
 echo Proceed with clean?
 read -p '[y/n]: ' clean
@@ -115,8 +120,8 @@ then
     echo
 
     echo -e "step 5: ${GREEN}Remove the oldest archived journal files until the disk space they use falls below the specified size${NOCOLOR}"
-    echo "Running: journalctl --vacuum-size 10M" | tee -a "$LOGFILE"
-    $DRYRUN || journalctl --vacuum-size 10M >> "$LOGFILE" 2>&1
+    echo "Running: journalctl --vacuum-size $VACUUM_SIZE" | tee -a "$LOGFILE"
+    $DRYRUN || journalctl --vacuum-size "$VACUUM_SIZE" >> "$LOGFILE" 2>&1
 
     echo
 
@@ -154,7 +159,7 @@ then
     echo
     echo Cleaning complete
     echo
-    df -hT -t ext4 | tee -a "$LOGFILE"
+    df -hT -t "$DISK_TYPE" | tee -a "$LOGFILE"
     $DRYRUN && echo "Dry run mode: no changes were actually made." | tee -a "$LOGFILE"
 
 fi

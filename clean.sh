@@ -92,6 +92,11 @@ then
     $DRYRUN || apt-get autoremove >> "$LOGFILE" 2>&1
 
     echo
+    echo -e "${YELLOW}Removing orphaned packages${NOCOLOR}" | tee -a "$LOGFILE"
+    deborphan | tee -a "$LOGFILE"
+    $DRYRUN || deborphan | xargs -r apt-get -y purge >> "$LOGFILE" 2>&1
+
+    echo
 
     echo -e "step 4: ${GREEN}rerun clean${NOCOLOR}"
     echo "Running: apt-get clean" | tee -a "$LOGFILE"
@@ -125,10 +130,28 @@ then
     done
 
     echo
+    echo -e "${YELLOW}Cleaning /var/cache (non-APT)${NOCOLOR}" | tee -a "$LOGFILE"
+    $DRYRUN || find /var/cache -type f -exec rm -f {} + >> "$LOGFILE" 2>&1
 
-    echo -e "step 5: ${GREEN}Remove the oldest archived journal files until the disk space they use falls below the specified size${NOCOLOR}"
-    echo "Running: journalctl --vacuum-size $VACUUM_SIZE" | tee -a "$LOGFILE"
-    $DRYRUN || journalctl --vacuum-size "$VACUUM_SIZE" >> "$LOGFILE" 2>&1
+    echo
+    echo -e "${YELLOW}Cleaning /tmp and /var/tmp${NOCOLOR}" | tee -a "$LOGFILE"
+    $DRYRUN || find /tmp /var/tmp -mindepth 1 -delete >> "$LOGFILE" 2>&1
+
+    echo
+    echo -e "${YELLOW}Removing core dumps${NOCOLOR}" | tee -a "$LOGFILE"
+    $DRYRUN || find / -type f -name 'core' -exec rm -f {} + >> "$LOGFILE" 2>&1
+
+    echo
+    echo -e "${YELLOW}Top 10 largest files${NOCOLOR}" | tee -a "$LOGFILE"
+    find / -type f -size +100M -exec du -h {} + 2>/dev/null | sort -hr | head -n 10 >> "$LOGFILE"
+
+    echo
+    echo -e "${YELLOW}Cleaning rotated and uncompressed logs${NOCOLOR}" | tee -a "$LOGFILE"
+    $DRYRUN || find /var/log -type f \( -name "*.log" -o -name "*.gz" -o -name "*.1" \) -delete >> "$LOGFILE" 2>&1
+
+    echo
+    echo -e "${YELLOW}Cleaning user caches${NOCOLOR}" | tee -a "$LOGFILE"
+    $DRYRUN || rm -rf /home/*/.cache /root/.cache /home/*/.npm /root/.npm >> "$LOGFILE" 2>&1
 
     echo
 
@@ -162,6 +185,11 @@ then
     else
         echo "Snap not installed. Skipping snap cleanup."
     fi
+
+    echo
+    echo -e "${YELLOW}Cleaning Snap mounts and cached snaps${NOCOLOR}" | tee -a "$LOGFILE"
+    $DRYRUN || umount /snap/* 2>/dev/null
+    $DRYRUN || rm -rf /var/lib/snapd/snaps/*.snap >> "$LOGFILE" 2>&1
 
     echo
     echo Cleaning complete

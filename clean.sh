@@ -2,8 +2,6 @@
 # Removes old revisions of snaps
 # CLOSE ALL SNAPS BEFORE RUNNING THIS
 
-#!/bin/bash
-
 GREEN="\033[1;32m"
 NOCOLOR="\033[0m"
 OLDCONF=$(dpkg -l|grep "^rc"|awk '{print $2}')
@@ -27,8 +25,8 @@ then
 
     # if not root, run as root
     if (( $EUID != 0 )); then
-        sudo bash $HOME/upgrade.sh
-        exit
+        echo "Please run this script as root."
+        exit 1
     fi
 
     echo
@@ -82,37 +80,36 @@ then
 
     echo
 
-    echo Does this VM have docker? and do you want to purge docker?
-
-    read -p '[y/n]: ' varok
-
-    if [[ $varok = 'y' ]]
-    then
-
-    echo -e "step 6: ${GREEN}purging docker${NOCOLOR}"
-    docker container prune -f && docker image prune -f
-
-    echo
+    if command -v docker &> /dev/null; then
+        echo Does this VM have docker? and do you want to purge docker?
+        read -p '[y/n]: ' varok
+        if [[ $varok = 'y' ]]; then
+            echo -e "step 6: ${GREEN}purging docker${NOCOLOR}"
+            docker container prune -f && docker image prune -f
+            echo
+        fi
+    else
+        echo "Docker not installed. Skipping Docker cleanup."
     fi
 
     echo Remove old revisions of snaps?
 
-    read -p '[y/n]: ' varsnap
-
-    if [[ $varsnap = 'y' ]]
-    then
-
-    set -eu
-    snap list --all | awk '/disabled/{print $1, $3}' |
-        while read snapname revision; do
-            snap remove "$snapname" --revision="$revision"
-        done
-
+    if command -v snap &> /dev/null; then
+        read -p '[y/n]: ' varsnap
+        if [[ $varsnap = 'y' ]]; then
+            set -eu
+            snap list --all | awk '/disabled/{print $1, $3}' |
+                while read snapname revision; do
+                    snap remove "$snapname" --revision="$revision"
+                done
+        fi
+    else
+        echo "Snap not installed. Skipping snap cleanup."
     fi
 
-echo
-echo Cleaning complete
-echo
-df -hT -t ext4
+    echo
+    echo Cleaning complete
+    echo
+    df -hT -t ext4
 
 fi

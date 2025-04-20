@@ -2,6 +2,9 @@
 # Removes old revisions of snaps
 # CLOSE ALL SNAPS BEFORE RUNNING THIS
 
+TRASH_PATHS="${TRASH_PATHS:-/home/*/.local/share/Trash/*/** /root/.local/share/Trash/*/**}"
+KERNEL_KEEP="${KERNEL_KEEP:-1}"
+
 VACUUM_SIZE="${VACUUM_SIZE:-10M}"
 DISK_TYPE="${DISK_TYPE:-ext4}"
 
@@ -41,6 +44,8 @@ echo "==== Cleanup started at $(date) ====" > "$LOGFILE"
 echo "Dry run mode: $DRYRUN" >> "$LOGFILE"
 echo "Vacuum size: $VACUUM_SIZE" >> "$LOGFILE"
 echo "Disk type: $DISK_TYPE" >> "$LOGFILE"
+echo "Trash paths: $TRASH_PATHS" >> "$LOGFILE"
+echo "Kernel versions to keep: $KERNEL_KEEP" >> "$LOGFILE"
 
 OLDCONF=$(dpkg -l|grep "^rc"|awk '{print $2}')
 CURKERNEL=$(uname -r|sed 's/-*[a-z]//g'|sed 's/-386//g')
@@ -112,10 +117,10 @@ then
     echo
 
     echo -e $YELLOW"Emptying trashes..."$ENDCOLOR
-    echo "Running: rm -rf /home/*/.local/share/Trash/*/**" | tee -a "$LOGFILE"
-    $DRYRUN || rm -rf /home/*/.local/share/Trash/*/** >> "$LOGFILE" 2>&1
-    echo "Running: rm -rf /root/.local/share/Trash/*/**" | tee -a "$LOGFILE"
-    $DRYRUN || rm -rf /root/.local/share/Trash/*/** >> "$LOGFILE" 2>&1
+    for path in $TRASH_PATHS; do
+        echo "Running: rm -rf $path" | tee -a "$LOGFILE"
+        $DRYRUN || rm -rf $path >> "$LOGFILE" 2>&1
+    done
 
     echo
 

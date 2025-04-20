@@ -40,7 +40,8 @@ for arg in "$@"; do
     esac
 done
 
-START_USAGE=$(df --output=used -kT -t "$DISK_TYPE" | tail -1)
+DISK_MOUNT="${DISK_MOUNT:-/}"
+START_USAGE=$(df --output=used -k "$DISK_MOUNT" | tail -1)
 
 echo "==== Cleanup started at $(date) ====" > "$LOGFILE"
 echo "Dry run mode: $DRYRUN" >> "$LOGFILE"
@@ -197,13 +198,22 @@ then
     echo Cleaning complete
     echo
 
-    END_USAGE=$(df --output=used -kT -t "$DISK_TYPE" | tail -1)
-    FREED_KB=$(( $(echo $START_USAGE | awk '{print $2}') - $(echo $END_USAGE | awk '{print $2}') ))
-    FREED_MB=$(( FREED_KB / 1024 ))
-    command -v numfmt >/dev/null || FREED_HUMAN="${FREED_MB}MB"
-    FREED_HUMAN=$(numfmt --to=iec $((FREED_MB * 1024 * 1024)))
-
-    df -hT -t "$DISK_TYPE" | tee -a "$LOGFILE"
+    END_USAGE=$(df --output=used -k "$DISK_MOUNT" | tail -1)
+    START_VAL=$(echo "$START_USAGE" | awk '{print $1}')
+    END_VAL=$(echo "$END_USAGE" | awk '{print $1}')
+    if [[ "$START_VAL" =~ ^[0-9]+$ && "$END_VAL" =~ ^[0-9]+$ ]]; then
+        FREED_KB=$((START_VAL - END_VAL))
+        FREED_MB=$((FREED_KB / 1024))
+        if command -v numfmt >/dev/null; then
+            FREED_HUMAN=$(numfmt --to=iec $((FREED_MB * 1024 * 1024)))
+        else
+            FREED_HUMAN="${FREED_MB}MB"
+        fi
+    else
+        FREED_MB=0
+        FREED_HUMAN="N/A"
+    fi
+    df -h "$DISK_MOUNT" | tee -a "$LOGFILE"
     $DRYRUN && echo "Dry run mode: no changes were actually made." | tee -a "$LOGFILE"
 
     echo

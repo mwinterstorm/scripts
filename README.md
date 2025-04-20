@@ -51,7 +51,16 @@ sudo bash scripts/clean.sh --nuclear
 ```
 
 ## easyUpdate
-Updates packages
+Performs a full, interactive system update with logging and summary.
+
+- Fixes broken packages
+- Updates package list
+- Shows available upgrades and asks before proceeding
+- Installs available upgrades
+- Removes unused packages and cleans package cache
+- Logs actions to `/var/log/update-script.log`
+- Displays a post-update summary including uptime, kernel version, and disk usage
+- Prompts to reboot if required
 
 ### Run with 
 ```

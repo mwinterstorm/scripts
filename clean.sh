@@ -4,13 +4,19 @@
 
 GREEN="\033[1;32m"
 NOCOLOR="\033[0m"
+DRYRUN=false
+LOGFILE="/var/log/clean-script.log"
+[[ "$1" == "--dry-run" ]] && DRYRUN=true
+
+echo "==== Cleanup started at $(date) ====" > "$LOGFILE"
+echo "Dry run mode: $DRYRUN" >> "$LOGFILE"
+
 OLDCONF=$(dpkg -l|grep "^rc"|awk '{print $2}')
 CURKERNEL=$(uname -r|sed 's/-*[a-z]//g'|sed 's/-386//g')
 LINUXPKG="linux-(image|headers|ubuntu-modules|restricted-modules)"
 METALINUXPKG="linux-(image|headers|restricted-modules)-(generic|i386|server|common|rt|xen)"
 OLDKERNELS=$(dpkg -l|awk '{print $2}'|grep -E $LINUXPKG |grep -vE $METALINUXPKG|grep -v $CURKERNEL)
 YELLOW="\033[1;33m"; RED="\033[0;31m"; ENDCOLOR="\033[0m"
-
 
 echo Cleaning script by Mark
 echo
@@ -32,32 +38,36 @@ then
     echo
 
     echo -e "step 1: ${GREEN}delete downloaded packages (.deb) already installed (and no longer needed)${NOCOLOR}"
-    apt-get clean
+    echo "Running: apt-get clean" | tee -a "$LOGFILE"
+    $DRYRUN || apt-get clean >> "$LOGFILE" 2>&1
 
     echo
 
     echo -e "step 2: ${GREEN}remove all stored archives in your cache for packages that can not be downloaded anymore (thus packages that are no longer in the repository or that have a newer version in the repository)${NOCOLOR}"
-    apt-get autoclean
+    echo "Running: apt-get autoclean" | tee -a "$LOGFILE"
+    $DRYRUN || apt-get autoclean >> "$LOGFILE" 2>&1
 
     echo
 
     echo -e "step 3: ${GREEN}remove unnecessary packages (After uninstalling an app there could be packages you don't need anymore)${NOCOLOR}"
-    apt-get autoremove
+    echo "Running: apt-get autoremove" | tee -a "$LOGFILE"
+    $DRYRUN || apt-get autoremove >> "$LOGFILE" 2>&1
 
     echo
 
     echo -e "step 4: ${GREEN}rerun clean${NOCOLOR}"
-    apt-get clean
+    echo "Running: apt-get clean" | tee -a "$LOGFILE"
+    $DRYRUN || apt-get clean >> "$LOGFILE" 2>&1
 
     echo
-
 
     echo -e $YELLOW"Those packages were uninstalled without --purge:"$ENDCOLOR
     echo $OLDCONF
     for PKGNAME in $OLDCONF ; do  # a better way to handle errors
         echo -e $YELLOW"Purge package $PKGNAME"
         apt-cache show "$PKGNAME"|grep Description: -A3
-        apt-get -y purge "$PKGNAME"
+        echo "Running: apt-get -y purge \"$PKGNAME\"" | tee -a "$LOGFILE"
+        $DRYRUN || apt-get -y purge "$PKGNAME" >> "$LOGFILE" 2>&1
     done
 
     echo
@@ -65,18 +75,22 @@ then
     echo -e $YELLOW"Removing old kernels..."$ENDCOLOR
     echo current kernel you are using:
     uname -a
-    apt purge $OLDKERNELS
+    echo "Running: apt purge $OLDKERNELS" | tee -a "$LOGFILE"
+    $DRYRUN || apt purge $OLDKERNELS >> "$LOGFILE" 2>&1
 
     echo
 
     echo -e $YELLOW"Emptying trashes..."$ENDCOLOR
-    rm -rf /home/*/.local/share/Trash/*/** &> /dev/null
-    rm -rf /root/.local/share/Trash/*/** &> /dev/null
+    echo "Running: rm -rf /home/*/.local/share/Trash/*/**" | tee -a "$LOGFILE"
+    $DRYRUN || rm -rf /home/*/.local/share/Trash/*/** >> "$LOGFILE" 2>&1
+    echo "Running: rm -rf /root/.local/share/Trash/*/**" | tee -a "$LOGFILE"
+    $DRYRUN || rm -rf /root/.local/share/Trash/*/** >> "$LOGFILE" 2>&1
 
     echo
 
     echo -e "step 5: ${GREEN}Remove the oldest archived journal files until the disk space they use falls below the specified size${NOCOLOR}"
-    journalctl --vacuum-size 10M
+    echo "Running: journalctl --vacuum-size 10M" | tee -a "$LOGFILE"
+    $DRYRUN || journalctl --vacuum-size 10M >> "$LOGFILE" 2>&1
 
     echo
 
@@ -85,7 +99,10 @@ then
         read -p '[y/n]: ' varok
         if [[ $varok = 'y' ]]; then
             echo -e "step 6: ${GREEN}purging docker${NOCOLOR}"
-            docker container prune -f && docker image prune -f
+            echo "Running: docker container prune -f" | tee -a "$LOGFILE"
+            $DRYRUN || docker container prune -f >> "$LOGFILE" 2>&1
+            echo "Running: docker image prune -f" | tee -a "$LOGFILE"
+            $DRYRUN || docker image prune -f >> "$LOGFILE" 2>&1
             echo
         fi
     else
@@ -100,7 +117,8 @@ then
             set -eu
             snap list --all | awk '/disabled/{print $1, $3}' |
                 while read snapname revision; do
-                    snap remove "$snapname" --revision="$revision"
+                    echo "Running: snap remove \"$snapname\" --revision=\"$revision\"" | tee -a "$LOGFILE"
+                    $DRYRUN || snap remove "$snapname" --revision="$revision" >> "$LOGFILE" 2>&1
                 done
         fi
     else
@@ -110,6 +128,7 @@ then
     echo
     echo Cleaning complete
     echo
-    df -hT -t ext4
+    df -hT -t ext4 | tee -a "$LOGFILE"
+    $DRYRUN && echo "Dry run mode: no changes were actually made." | tee -a "$LOGFILE"
 
 fi

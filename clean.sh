@@ -231,7 +231,8 @@ then
             read -p "Install localepurge? [y/n]: " install_lp
             if [[ "$install_lp" == "y" ]]; then
                 echo "Installing localepurge..." | tee -a "$LOGFILE"
-                $DRYRUN || apt-get install -y localepurge >> "$LOGFILE" 2>&1
+                $DRYRUN || echo 'localepurge	localepurge/nopurge	multiselect en, en_NZ.UTF-8' | debconf-set-selections
+                $DRYRUN || DEBIAN_FRONTEND=noninteractive apt-get install -y localepurge >> "$LOGFILE" 2>&1
                 echo "Running localepurge..." | tee -a "$LOGFILE"
                 $DRYRUN || localepurge >> "$LOGFILE" 2>&1
             else

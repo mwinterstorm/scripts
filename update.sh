@@ -5,8 +5,8 @@ NOCOLOR="\033[0m"
 
 # if not root, run as root
 if (( $EUID != 0 )); then
-    sudo bash $HOME/upgrade.sh
-    exit
+    echo "Re-running as root..."
+    exec sudo bash "$0"
 fi
 
 echo
@@ -17,7 +17,7 @@ dpkg --configure -a
 echo
 
 echo -e "step 2: ${GREEN}fix and attempt to correct a system with broken dependencies${NOCOLOR}"
-apt-get install -f
+apt-get install -f -y
 
 echo
 
@@ -39,22 +39,29 @@ if [[ $varok = 'y' ]]
 then
 
 echo -e "step 5: ${GREEN}upgrade packages${NOCOLOR}"
-apt-get upgrade
+apt-get upgrade -y
 
 echo
 
 echo -e "step 6: ${GREEN}distribution upgrade${NOCOLOR}"
-apt-get dist-upgrade
+apt-get dist-upgrade -y
 
 echo
 
 echo -e "step 7: ${GREEN}remove unused packages${NOCOLOR}"
-apt-get --purge autoremove
+apt-get --purge autoremove -y
 
 echo
 
 echo -e "step 8: ${GREEN}clean up${NOCOLOR}"
-apt-get autoclean
+apt-get autoclean -y
 
 echo
+
+if [ -f /var/run/reboot-required ]; then
+    echo
+    echo -e "${GREEN}System update complete. A reboot is required.${NOCOLOR}"
+    read -p "Reboot now? [y/n]: " rebootnow
+    [[ $rebootnow == "y" ]] && reboot
+fi
 fi

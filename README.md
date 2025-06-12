@@ -104,7 +104,8 @@ npm install
 ```
 
 ### Run
-Place URLs (one per line) in `urls.txt` inside the `url-tool` folder.
+Place URLs (one per line) in urls.txt inside the url-tool folder.
+
 
 Create a merged PDF (use `--pdf` to skip the format prompt):
 
@@ -112,10 +113,13 @@ Create a merged PDF (use `--pdf` to skip the format prompt):
 node scripts/url-tool/archive-urls.js --pdf --output=myfile
 ```
 
+
 Extract page text instead (use `--markdown` to skip the prompt):
+
 ```
 node scripts/url-tool/archive-urls.js --markdown --output=pages
 ```
+
 
 Run without `--pdf` or `--markdown` to choose the format interactively.
 

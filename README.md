@@ -21,7 +21,7 @@ Probably not best practice as I am nothing more than an enthusiastic amatuer...
     - [Clone with github](#clone-with-github)
     - [or add github if necessary:](#or-add-github-if-necessary)
 
-## Available scripts
+# Available scripts
 ## easyClean
 Runs a comprehensive cleaning script to free up disk space on your system. It includes:
 - apt clean, autoclean, autoremove

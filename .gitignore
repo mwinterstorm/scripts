@@ -1,5 +1,8 @@
 # manual ignored files
 url-tool/urls.txt
+*.pdf
+*.png
+*.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

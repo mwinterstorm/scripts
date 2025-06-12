@@ -77,7 +77,7 @@ outputFile = markdownOnly
 
       const title = await page.title();
       const text = await page.evaluate(() => document.body.innerText);
-      sections.push(`# ${title}\n\nSource: ${location.href}\n\n${text}\n`);
+      sections.push(`# ${title}\n\nSource: ${urls[i]}\n\n${text}\n`);
       await page.close();
     }
     fs.writeFileSync(outputFile, sections.join('\n---\n\n'), 'utf-8');

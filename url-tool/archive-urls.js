@@ -7,7 +7,21 @@ const { default: PDFMerger } = require('pdf-merger-js');
 const args = process.argv.slice(2);
 let outputFileArg = args.find(arg => arg.startsWith('--output='));
 let outputFile = outputFileArg ? outputFileArg.split('=')[1] : null;
-const markdownOnly = args.includes('--markdown');
+let markdownOnly = args.includes('--markdown');
+const pdfFlag = args.includes('--pdf');
+
+if (markdownOnly && pdfFlag) {
+  console.error('❌ Please specify only one of --markdown or --pdf');
+  process.exit(1);
+}
+
+if (!markdownOnly && !pdfFlag) {
+  const resp = readline
+    .question('\nChoose output format - pdf or markdown? [pdf]: ')
+    .trim()
+    .toLowerCase();
+  markdownOnly = resp.startsWith('m');
+}
 
 // === Load URLs from file ===
 const urlFile = 'urls.txt';

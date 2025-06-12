@@ -1,5 +1,5 @@
 # manual ignored files
-feijoa/urls.txt
+url-tool/urls.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

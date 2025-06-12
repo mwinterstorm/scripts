@@ -84,6 +84,28 @@ Commands to:
 sudo bash scripts/matrix.sh
 ```
 
+## feijoa
+Tools for archiving web pages to a PDF or Markdown document.
+
+### Install
+```
+cd scripts/feijoa
+npm install
+```
+
+### Run
+Place URLs (one per line) in `urls.txt` inside the `feijoa` folder.
+
+Create a merged PDF:
+```
+node scripts/feijoa/archive-urls.js --output=myfile
+```
+
+Extract page text instead:
+```
+node scripts/feijoa/archive-urls.js --markdown --output=pages
+```
+
 # update
 ```
 cd scripts

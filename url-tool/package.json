@@ -1,5 +1,5 @@
 {
-  "name": "feijoa-scripts",
+  "name": "url-tool",
   "version": "1.0.0",
   "description": "Tools for archiving web pages to PDF or Markdown",
   "dependencies": {

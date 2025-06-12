@@ -84,26 +84,26 @@ Commands to:
 sudo bash scripts/matrix.sh
 ```
 
-## feijoa
+## url-tool
 Tools for archiving web pages to a PDF or Markdown document.
 
 ### Install
 ```
-cd scripts/feijoa
+cd scripts/url-tool
 npm install
 ```
 
 ### Run
-Place URLs (one per line) in `urls.txt` inside the `feijoa` folder.
+Place URLs (one per line) in `urls.txt` inside the `url-tool` folder.
 
 Create a merged PDF:
 ```
-node scripts/feijoa/archive-urls.js --output=myfile
+node scripts/url-tool/archive-urls.js --output=myfile
 ```
 
 Extract page text instead:
 ```
-node scripts/feijoa/archive-urls.js --markdown --output=pages
+node scripts/url-tool/archive-urls.js --markdown --output=pages
 ```
 
 # update

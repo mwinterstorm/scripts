@@ -3,7 +3,16 @@ Helpful scripts and tools for managing my servers
 
 Probably not best practice as I am nothing more than an enthusiastic amatuer...
 
-# Scripts
+# Table of Contents
+- [Available scripts](#available-scripts)
+  - [easyClean](#easyclean)
+  - [easyUpdate](#easyupdate)
+  - [matrix](#matrix)
+  - [url-tool](#url-tool)
+- [update](#update)
+- [add to server](#add-to-server)
+
+# Available scripts
 ## easyClean
 Runs a comprehensive cleaning script to free up disk space on your system. It includes:
 - apt clean, autoclean, autoremove
@@ -85,9 +94,10 @@ sudo bash scripts/matrix.sh
 ```
 
 ## url-tool
-Tools for archiving web pages to a PDF or Markdown document.
+A Node.js tool for saving a list of web pages as a single PDF or as Markdown text.
 
 ### Install
+Requires Node.js and npm.
 ```
 cd scripts/url-tool
 npm install
@@ -97,6 +107,7 @@ npm install
 Place URLs (one per line) in `urls.txt` inside the `url-tool` folder.
 
 Create a merged PDF (use `--pdf` to skip the format prompt):
+
 ```
 node scripts/url-tool/archive-urls.js --pdf --output=myfile
 ```
@@ -107,6 +118,7 @@ node scripts/url-tool/archive-urls.js --markdown --output=pages
 ```
 
 Run without `--pdf` or `--markdown` to choose the format interactively.
+
 
 # update
 ```

@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Tools for archiving web pages to PDF or Markdown",
   "dependencies": {
-    "pdf-merger-js": "^4.2.0",
-    "puppeteer": "^21.7.0",
-    "readline-sync": "^1.4.10"
+    "pdf-merger-js": "latest",
+    "puppeteer": "latest",
+    "readline-sync": "latest"
   }
 }

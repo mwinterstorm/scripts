@@ -6,20 +6,11 @@ Probably not best practice as I am nothing more than an enthusiastic amatuer...
 # Table of Contents
 - [Available scripts](#available-scripts)
   - [easyClean](#easyclean)
-    - [Run with](#run-with)
-    - [Options](#options)
-    - [Example: Nuclear Cleanup](#example-nuclear-cleanup)
   - [easyUpdate](#easyupdate)
-    - [Run with](#run-with-1)
   - [matrix](#matrix)
-    - [Run with](#run-with-2)
   - [url-tool](#url-tool)
-    - [Install](#install)
-    - [Run](#run)
 - [update](#update)
-  - [add to server](#add-to-server)
-    - [Clone with github](#clone-with-github)
-    - [or add github if necessary:](#or-add-github-if-necessary)
+- [add to server](#add-to-server)
 
 # Available scripts
 ## easyClean
